@@ -12,15 +12,15 @@ import java.math.RoundingMode;
 
 public class SliderComponent extends SettingComponent {
 
-    private final NumSetting setting;
+    protected final NumSetting setting;
 
     public SliderComponent(NumSetting setting, int x, int y, int width, int height) {
         super(x, y, width, height);
         this.setting = setting;
     }
 
-    private boolean draggingSlider;
-    private float sliderWidth;
+    protected boolean draggingSlider;
+    protected float sliderWidth;
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
@@ -59,7 +59,7 @@ public class SliderComponent extends SettingComponent {
     public void keyTyped(char keyChar, int keycode) {
     }
 
-    private void updateLogic(int mouseX, int mouseY) {
+    protected void updateLogic(int mouseX, int mouseY) {
         float difference = Math.min(width, Math.max(0, mouseX - x));
         float min = setting.getMin();
         float max = setting.getMax();
@@ -69,7 +69,7 @@ public class SliderComponent extends SettingComponent {
             if (difference == 0) {
                 setting.setValue(min);
             } else {
-                float val = Util.roundNumber(difference / width * (max - min) + min, 1);
+                float val = Util.roundNumber(difference / width * (max - min) + min, 2);
                 setting.setValue(val);
             }
         }

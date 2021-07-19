@@ -4,56 +4,37 @@ import java.awt.*;
 
 public class ColorSetting extends AbstractSetting {
 
-    private int red;
-    private int green;
-    private int blue;
-    private int alpha;
+    private final NumSetting hue;
+    private final NumSetting saturation;
+    private final NumSetting brightness;
+    private final NumSetting alpha;
 
     public ColorSetting(String name, int red, int green, int blue, int alpha) {
         super(name);
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
+        final float[] arr = Color.RGBtoHSB(red, green, blue, null);
+        this.hue = new NumSetting("Hue", arr[0], 0f, 1.0f);
+        this.saturation = new NumSetting("Saturation", arr[1], 0f, 1.0f);
+        this.brightness = new NumSetting("Brightness", arr[2], 0f, 1.0f);
+        this.alpha = new NumSetting("Alpha", alpha, 0, 255);
     }
 
-    public int getRGB() {
-        return (alpha & 255) << 24 | (red & 255) << 16 | (green & 255) << 8 | (blue & 255) << 0;
+    public NumSetting getHue() {
+        return hue;
     }
 
-    public int getRed() {
-        return red;
+    public NumSetting getSaturation() {
+        return saturation;
     }
 
-    public void setRed(int red) {
-        this.red = red;
+    public NumSetting getBrightness() {
+        return brightness;
     }
 
-    public int getGreen() {
-        return green;
-    }
-
-    public void setGreen(int green) {
-        this.green = green;
-    }
-
-    public int getBlue() {
-        return blue;
-    }
-
-    public void setBlue(int blue) {
-        this.blue = blue;
-    }
-
-    public int getAlpha() {
+    public NumSetting getAlpha() {
         return alpha;
     }
 
-    public void setAlpha(int alpha) {
-        this.alpha = alpha;
-    }
-
     public Color getColor() {
-        return new Color(red, green, blue, alpha);
+        return Color.getHSBColor(hue.getValue(), saturation.getValue(), brightness.getValue());
     }
 }

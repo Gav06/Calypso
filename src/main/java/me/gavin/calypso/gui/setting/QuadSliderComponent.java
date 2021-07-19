@@ -3,16 +3,15 @@ package me.gavin.calypso.gui.setting;
 import me.gavin.calypso.gui.Component;
 import me.gavin.calypso.misc.Util;
 import me.gavin.calypso.settings.NumSetting;
-import net.minecraft.client.gui.Gui;
 
-public class QuadSliderComponent extends Component {
+public abstract class QuadSliderComponent extends Component {
 
     private final NumSetting xSetting;
     private final NumSetting ySetting;
 
     private boolean dragging;
-    private float sliderWidth;
-    private float sliderHeight;
+    protected float sliderWidth;
+    protected float sliderHeight;
 
 
     public QuadSliderComponent(NumSetting xSetting, NumSetting ySetting, int x, int y, int width, int height) {
@@ -37,11 +36,10 @@ public class QuadSliderComponent extends Component {
     public void draw(int mouseX, int mouseY, float partialTicks) {
         updateLogicX(mouseX);
         updateLogicY(mouseY);
-
-        Gui.drawRect(x, y, x + width, y + height, 0x90FFFFFF);
-        Gui.drawRect((int) (x + sliderWidth - 1), (int) (y + sliderHeight - 1), (int) (x + sliderWidth + 1), (int) (y + sliderHeight + 1), 0xFF000000);
-        mc.fontRenderer.drawStringWithShadow("x: " + xSetting.getValue() + " y: " + ySetting.getValue(), x, y - mc.fontRenderer.FONT_HEIGHT - 1, -1);
+        drawPicker(mouseX, mouseY, partialTicks);
     }
+
+    public abstract void drawPicker(int mouseX, int mouseY, float partialTicks);
 
     private void updateLogicX(int mouseX) {
         float difference = Math.min(width, Math.max(0, mouseX - x));
@@ -53,7 +51,7 @@ public class QuadSliderComponent extends Component {
             if (difference == 0) {
                 xSetting.setValue(min);
             } else {
-                float val = Util.roundNumber(difference / width * (max - min) + min, 1);
+                float val = Util.roundNumber(difference / width * (max - min) + min, 3);
                 xSetting.setValue(val);
             }
         }
@@ -69,7 +67,7 @@ public class QuadSliderComponent extends Component {
             if (difference == 0) {
                 ySetting.setValue(min);
             } else {
-                float val = Util.roundNumber(difference / height * (max - min) + min, 1);
+                float val = Util.roundNumber(difference / height * (max - min) + min, 3);
                 ySetting.setValue(val);
             }
         }

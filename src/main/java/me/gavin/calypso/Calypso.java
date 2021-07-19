@@ -83,8 +83,6 @@ public class Calypso {
         logger.info("Commands initialized");
 
         logger.info(MOD_NAME + " completed initialization");
-
-        System.out.println(GL11.GL_LINE_WIDTH_RANGE);
     }
 
     @Mod.EventHandler

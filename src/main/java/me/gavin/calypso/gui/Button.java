@@ -2,17 +2,11 @@ package me.gavin.calypso.gui;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.gavin.calypso.Calypso;
-import me.gavin.calypso.gui.setting.BindComponent;
-import me.gavin.calypso.gui.setting.BooleanComponent;
-import me.gavin.calypso.gui.setting.ModeComponent;
-import me.gavin.calypso.gui.setting.SliderComponent;
+import me.gavin.calypso.gui.setting.*;
 import me.gavin.calypso.module.HUDModule;
 import me.gavin.calypso.module.Module;
 import me.gavin.calypso.module.mod.ClickGUIModule;
-import me.gavin.calypso.settings.AbstractSetting;
-import me.gavin.calypso.settings.BoolSetting;
-import me.gavin.calypso.settings.EnumSetting;
-import me.gavin.calypso.settings.NumSetting;
+import me.gavin.calypso.settings.*;
 import net.minecraft.client.gui.Gui;
 
 import java.util.ArrayList;
@@ -37,6 +31,8 @@ public class Button extends Component implements Typeable {
                 this.settingComponents.add(new BooleanComponent((BoolSetting) setting, x, y, width - 4, height - 2));
             } else if (setting instanceof NumSetting) {
                 this.settingComponents.add(new SliderComponent((NumSetting) setting, x, y, width - 4, height - 2));
+            } else if (setting instanceof ColorSetting) {
+                this.settingComponents.add(new ColorComponent((ColorSetting) setting, x, y, width - 4, height - 2));
             }
         }
 
