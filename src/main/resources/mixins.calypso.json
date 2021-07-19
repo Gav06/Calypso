@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.gavin.calypso.mixin.common",
+  "refmap": "calypso.refmap.json",
+  "minVersion": "0.7",
+  "mixins": [
+    "MixinEntityPlayerSP",
+    "MixinEntityRenderer",
+    "MixinForgeHooks",
+    "MixinGuiMainMenu",
+    "MixinLayerBipedArmor",
+    "MixinNetworkManager",
+    "MixinPlayerControllerMP",
+    "MixinRenderGlobal",
+    "MixinWorld"
+  ]
+}

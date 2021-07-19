@@ -1,0 +1,16 @@
+[
+    {
+        "modid": "calypso",
+        "name": "Calypso",
+        "description": ":)",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "updateUrl": "",
+        "authorList": ["Gav06"],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": []
+    }
+]
