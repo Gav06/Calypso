@@ -15,13 +15,11 @@ public class Velocity extends Module {
 
     public final NumSetting horizontal = new NumSetting("Horizontal", 0f, 0f, 100f);
     public final NumSetting vertical = new NumSetting("Vertical", 0f, 0f, 100f);
-    public final BoolSetting explosionPackets = new BoolSetting("Cancel Explosion Packets", false);
 
     public Velocity() {
         super("Velocity", "Prevent knockback", ModCategory.Movement);
         this.getSettings().add(horizontal);
         this.getSettings().add(vertical);
-        this.getSettings().add(explosionPackets);
     }
 
     @SubscribeEvent
@@ -40,13 +38,9 @@ public class Velocity extends Module {
             }
         } else if (event.getPacket() instanceof SPacketExplosion) {
             final SPacketExplosion packet = (SPacketExplosion) event.getPacket();
-            if (explosionPackets.getValue()) {
-                event.setCanceled(true);
-            } else {
-                packet.motionX *= horizontal.getValue();
-                packet.motionY *= vertical.getValue();
-                packet.motionZ *= horizontal.getValue();
-            }
+            packet.motionX *= horizontal.getValue();
+            packet.motionY *= vertical.getValue();
+            packet.motionZ *= horizontal.getValue();
         } else if (event.getPacket() instanceof SPacketEntityStatus) {
             final SPacketEntityStatus packet = (SPacketEntityStatus) event.getPacket();
             if (packet.getOpCode() == 31 && packet.getEntity(mc.world) instanceof EntityFishHook) {

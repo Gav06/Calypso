@@ -86,7 +86,7 @@ public class Calypso {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-//        Display.setTitle(MOD_NAME + " " + VERSION + " - 1.12.2");
+        Display.setTitle(MOD_NAME + " " + VERSION + " - 1.12.2");
         moduleManager.sortModules();
 
         try {

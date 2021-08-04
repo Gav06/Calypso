@@ -5,7 +5,6 @@
   "refmap": "calypso.refmap.json",
   "minVersion": "0.7",
   "mixins": [
-    "MixinEntityEnderCrystal",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinForgeHooks",

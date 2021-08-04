@@ -18,6 +18,10 @@ public class Util {
         }
     }
 
+    public static void sendMessage(String message, int messageId) {
+        Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new TextComponentString(PREFIX + message), messageId);
+    }
+
     public static float normalize(float value, float min, float max) {
         return 1.0f - ((value - min) / (max - min));
     }

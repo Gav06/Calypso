@@ -2,6 +2,7 @@ package me.gavin.calypso.module.mod;
 
 import com.mojang.authlib.GameProfile;
 import me.gavin.calypso.events.CrystalExplosionEvent;
+import me.gavin.calypso.events.PacketEvent;
 import me.gavin.calypso.events.PlayerUpdateEvent;
 import me.gavin.calypso.misc.CrystalUtil;
 import me.gavin.calypso.misc.Util;
@@ -14,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -47,28 +49,21 @@ public class FakePlayer extends Module {
 
     @Override
     protected void onEnable() {
-        if (mc.world != null && mc.player != null) {
-            fakePlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("2da1acb3-1a8c-471f-a877-43f13cf37e6a"), "0IMAX"));
-            fakePlayer.copyLocationAndAnglesFrom(mc.player);
-            fakePlayer.rotationYawHead = mc.player.rotationYaw;
-            //fakePlayer.inventory.copyInventory(mc.player.inventory);
-            fakePlayer.setGameType(GameType.SURVIVAL);
-            fakePlayer.inventory.offHandInventory.set(0, new ItemStack(Items.TOTEM_OF_UNDYING));
-            mc.world.addEntityToWorld(-1776, fakePlayer);
-        } else {
-            disable();
-        }
+        spawnFakePlayer();
     }
 
     @SubscribeEvent
-    public void onCrystalExplode(CrystalExplosionEvent event) {
-        if (fakeTotemPops.getValue()) {
-            if (fakePlayer != null) {
-                if (fakePlayer.getDistance(event.getX(), event.getY(), event.getZ()) <= 15) {
-                    final double damage = CrystalUtil.calculateDamage(event.getX(), event.getY(), event.getZ(), fakePlayer);
-                    if (damage > 0) {
-                        final float health = realDamage.getValue() ? (float) (fakePlayer.getHealth() - damage) : fakePlayer.getHealth() - fakeDamageSlider.getValue();
-                        fakePlayer.setHealth(MathHelper.clamp(health, 0f, 9999));
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (event.getPacket() instanceof SPacketExplosion) {
+            if (fakeTotemPops.getValue()) {
+                if (fakePlayer != null) {
+                    final SPacketExplosion explosion = (SPacketExplosion) event.getPacket();
+                    if (fakePlayer.getDistance(explosion.getX(), explosion.getY(), explosion.getZ()) <= 15) {
+                        final double damage = CrystalUtil.calculateDamage(explosion.getX(), explosion.getY(), explosion.getZ(), fakePlayer);
+                        if (damage > 0) {
+                            final float health = realDamage.getValue() ? (float) (fakePlayer.getHealth() - damage) : fakePlayer.getHealth() - fakeDamageSlider.getValue();
+                            fakePlayer.setHealth(MathHelper.clamp(health, 0f, 9999));
+                        }
                     }
                 }
             }
@@ -79,6 +74,9 @@ public class FakePlayer extends Module {
     public void onPlayerLivingUpdate(PlayerUpdateEvent event) {
         if (fakeTotemPops.getValue()) {
             if (fakePlayer != null) {
+                if (fakePlayer.getHealth() < 0) {
+                    fakePlayer.setHealth(0f);
+                }
                 if (fakePlayer.ticksExisted % 2 == 0) {
                     fakePlayer.setHealth(fakePlayer.getHealth() + regeneration.getValue());
                 }
@@ -105,14 +103,31 @@ public class FakePlayer extends Module {
 
     @Override
     protected void onDisable() {
-        if (mc.world != null && fakePlayer != null) {
-            mc.world.removeEntityFromWorld(-1776);
-            fakePlayer = null;
-        }
     }
 
     private void fakeTotemPop(Entity entity) {
         mc.effectRenderer.emitParticleAtEntity(entity, EnumParticleTypes.TOTEM, 30);
         mc.world.playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
+    }
+
+    private void spawnFakePlayer() {
+        if (mc.world != null && mc.player != null) {
+            fakePlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("2da1acb3-1a8c-471f-a877-43f13cf37e6a"), "0IMAX"));
+            fakePlayer.copyLocationAndAnglesFrom(mc.player);
+            fakePlayer.rotationYawHead = mc.player.rotationYaw;
+            //fakePlayer.inventory.copyInventory(mc.player.inventory);
+            fakePlayer.setGameType(GameType.SURVIVAL);
+            fakePlayer.inventory.offHandInventory.set(0, new ItemStack(Items.TOTEM_OF_UNDYING));
+            mc.world.addEntityToWorld(-1776, fakePlayer);
+        } else {
+            disable();
+        }
+    }
+
+    private void removeFakePlayer() {
+        if (mc.world != null && fakePlayer != null) {
+            mc.world.removeEntityFromWorld(-1776);
+        }
+        fakePlayer = null;
     }
 }

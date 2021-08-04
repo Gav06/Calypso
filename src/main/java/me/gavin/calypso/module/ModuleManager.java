@@ -41,6 +41,7 @@ public class ModuleManager {
         modules.add(new KillAura());
         modules.add(new MobOwner());
         modules.add(new Step());
+        modules.add(new TotemPopCounter());
     }
 
     public void sortModules() {
