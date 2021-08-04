@@ -1,7 +1,6 @@
 package me.gavin.calypso.command;
 
-import scala.actors.threadpool.Arrays;
-
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandContainer {

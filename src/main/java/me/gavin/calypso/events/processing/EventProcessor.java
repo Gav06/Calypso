@@ -4,6 +4,7 @@ import me.gavin.calypso.Calypso;
 import me.gavin.calypso.events.PacketEvent;
 import me.gavin.calypso.events.PlayerTotemPopEvent;
 import me.gavin.calypso.gui.HUDEditor;
+import me.gavin.calypso.misc.ProjectionUtil;
 import me.gavin.calypso.misc.RenderUtil;
 import me.gavin.calypso.misc.Util;
 import me.gavin.calypso.module.HUDModule;
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -53,6 +55,11 @@ public class EventProcessor {
                     module.toggle();
             }
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderWorld(RenderWorldLastEvent event) {
+        ProjectionUtil.updateMatrix();
     }
 
     @SubscribeEvent

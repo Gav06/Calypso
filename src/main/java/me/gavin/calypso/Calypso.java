@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 
 @Mod(
         modid = Calypso.MOD_ID,
@@ -87,7 +86,7 @@ public class Calypso {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        Display.setTitle(MOD_NAME + " " + VERSION + " - 1.12.2");
+//        Display.setTitle(MOD_NAME + " " + VERSION + " - 1.12.2");
         moduleManager.sortModules();
 
         try {

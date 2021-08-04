@@ -1,17 +1,46 @@
 package me.gavin.calypso.module.mod;
 
 import com.mojang.authlib.GameProfile;
+import me.gavin.calypso.events.CrystalExplosionEvent;
+import me.gavin.calypso.events.PlayerUpdateEvent;
+import me.gavin.calypso.misc.CrystalUtil;
+import me.gavin.calypso.misc.Util;
 import me.gavin.calypso.module.ModCategory;
 import me.gavin.calypso.module.Module;
+import me.gavin.calypso.settings.BoolSetting;
+import me.gavin.calypso.settings.NumSetting;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.entity.Entity;
+import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameType;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.UUID;
 
 public class FakePlayer extends Module {
 
+    public final BoolSetting fakeTotemPops = new BoolSetting("Totem Pops", true);
+    public final BoolSetting realDamage = new BoolSetting("Realistic Damage", true);
+    public final NumSetting fakeDamageSlider = new NumSetting("Fake Damage", 6f, 0.1f, 20f);
+    public final NumSetting regeneration = new NumSetting("Regeneration", 0f, 0f, 3f);
+    public final BoolSetting beyblade = new BoolSetting("Beyblade", false);
+    public final BoolSetting creepy = new BoolSetting("Creep Mode", false);
+    public final BoolSetting punching = new BoolSetting("Punching", false);
+
     public FakePlayer() {
         super("FakePlayer", "A fake player to test on", ModCategory.Misc);
+        this.getSettings().add(fakeTotemPops);
+        this.getSettings().add(realDamage);
+        this.getSettings().add(fakeDamageSlider);
+        this.getSettings().add(regeneration);
+        this.getSettings().add(beyblade);
+        this.getSettings().add(creepy);
+        this.getSettings().add(punching);
     }
 
     private EntityOtherPlayerMP fakePlayer;
@@ -22,10 +51,55 @@ public class FakePlayer extends Module {
             fakePlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("2da1acb3-1a8c-471f-a877-43f13cf37e6a"), "0IMAX"));
             fakePlayer.copyLocationAndAnglesFrom(mc.player);
             fakePlayer.rotationYawHead = mc.player.rotationYaw;
-            fakePlayer.inventory.copyInventory(mc.player.inventory);
+            //fakePlayer.inventory.copyInventory(mc.player.inventory);
+            fakePlayer.setGameType(GameType.SURVIVAL);
+            fakePlayer.inventory.offHandInventory.set(0, new ItemStack(Items.TOTEM_OF_UNDYING));
             mc.world.addEntityToWorld(-1776, fakePlayer);
         } else {
             disable();
+        }
+    }
+
+    @SubscribeEvent
+    public void onCrystalExplode(CrystalExplosionEvent event) {
+        if (fakeTotemPops.getValue()) {
+            if (fakePlayer != null) {
+                if (fakePlayer.getDistance(event.getX(), event.getY(), event.getZ()) <= 15) {
+                    final double damage = CrystalUtil.calculateDamage(event.getX(), event.getY(), event.getZ(), fakePlayer);
+                    if (damage > 0) {
+                        final float health = realDamage.getValue() ? (float) (fakePlayer.getHealth() - damage) : fakePlayer.getHealth() - fakeDamageSlider.getValue();
+                        fakePlayer.setHealth(MathHelper.clamp(health, 0f, 9999));
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLivingUpdate(PlayerUpdateEvent event) {
+        if (fakeTotemPops.getValue()) {
+            if (fakePlayer != null) {
+                if (fakePlayer.ticksExisted % 2 == 0) {
+                    fakePlayer.setHealth(fakePlayer.getHealth() + regeneration.getValue());
+                }
+                if (fakePlayer.getHealth() <= 0) {
+                    fakeTotemPop(fakePlayer);
+                    fakePlayer.setHealth(20);
+                }
+                if (creepy.getValue() && !beyblade.getValue()) {
+                    double[] rotations = Util.calculateLookAt(mc.player.posX, mc.player.posY + mc.player.eyeHeight, mc.player.posZ, fakePlayer);
+                    fakePlayer.rotationYawHead = (float) rotations[0];
+                    fakePlayer.rotationYaw = (float) rotations[0];
+                    fakePlayer.rotationPitch = (float) rotations[1];
+                }
+                if (beyblade.getValue()) {
+                    fakePlayer.rotationYaw += 20;
+                    fakePlayer.rotationYawHead += 20;
+                }
+                if (punching.getValue()) {
+                    fakePlayer.swingArm(EnumHand.MAIN_HAND);
+                }
+            }
         }
     }
 
@@ -35,5 +109,10 @@ public class FakePlayer extends Module {
             mc.world.removeEntityFromWorld(-1776);
             fakePlayer = null;
         }
+    }
+
+    private void fakeTotemPop(Entity entity) {
+        mc.effectRenderer.emitParticleAtEntity(entity, EnumParticleTypes.TOTEM, 30);
+        mc.world.playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
     }
 }

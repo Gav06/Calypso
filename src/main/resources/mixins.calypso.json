@@ -5,14 +5,18 @@
   "refmap": "calypso.refmap.json",
   "minVersion": "0.7",
   "mixins": [
+    "MixinEntityEnderCrystal",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinForgeHooks",
     "MixinGuiMainMenu",
     "MixinLayerBipedArmor",
+    "MixinMinecraft",
     "MixinNetworkManager",
     "MixinPlayerControllerMP",
     "MixinRenderGlobal",
+    "MixinRenderPlayer",
+    "MixinScreenShotHelper",
     "MixinWorld"
   ]
 }

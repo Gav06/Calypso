@@ -13,9 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UUIDResolver {
 
-    private static final Map<String, String> uuidNameCache = new ConcurrentHashMap<>();
+    public static final Map<String, String> uuidNameCache = new ConcurrentHashMap<>();
 
     public static String resolveName(String uuid) {
+        final String original = uuid;
         uuid = uuid.replace("-", "");
         if (uuidNameCache.containsKey(uuid)) {
             return uuidNameCache.get(uuid);
@@ -29,6 +30,7 @@ public class UUIDResolver {
                 if (jsonArray != null) {
                     final JSONObject latestName = (JSONObject) jsonArray.get(jsonArray.size() - 1);
                     if (latestName != null) {
+                        uuidNameCache.put(original, latestName.get("name").toString());
                         return latestName.get("name").toString();
                     }
                 }

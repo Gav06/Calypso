@@ -33,6 +33,14 @@ public class ModuleManager {
         modules.add(new NoRender());
         modules.add(new NoFog());
         modules.add(new Fullbright());
+        modules.add(new Nametags());
+        modules.add(new BetterScreenshot());
+        modules.add(new Criticals());
+        modules.add(new Velocity());
+        modules.add(new NoFall());
+        modules.add(new KillAura());
+        modules.add(new MobOwner());
+        modules.add(new Step());
     }
 
     public void sortModules() {
