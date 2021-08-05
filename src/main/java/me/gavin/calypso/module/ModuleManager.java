@@ -43,6 +43,7 @@ public class ModuleManager {
         modules.add(new MobOwner());
         modules.add(new Step());
         modules.add(new TotemPopCounter());
+        modules.add(new ThrowTrails());
     }
 
     public void sortModules() {

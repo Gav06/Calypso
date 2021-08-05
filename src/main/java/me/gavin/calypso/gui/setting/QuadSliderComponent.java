@@ -65,9 +65,9 @@ public abstract class QuadSliderComponent extends Component {
         sliderHeight = height * (value - min) / (max - min);
         if (dragging) {
             if (difference == 0) {
-                ySetting.setValue(min);
+                ySetting.setValue(max);
             } else {
-                float val = Util.roundNumber(difference / height * (max - min) + min, 3);
+                float val = Util.roundNumber(difference / height * (min - max) + max, 3);
                 ySetting.setValue(val);
             }
         }
