@@ -20,6 +20,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameType;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.UUID;
@@ -33,6 +34,7 @@ public class FakePlayer extends Module {
     public final BoolSetting beyblade = new BoolSetting("Beyblade", false);
     public final BoolSetting creepy = new BoolSetting("Creep Mode", false);
     public final BoolSetting punching = new BoolSetting("Punching", false);
+    public final BoolSetting copyInv = new BoolSetting("Copy Inventory", false);
 
     public FakePlayer() {
         super("FakePlayer", "A fake player to test on", ModCategory.Misc);
@@ -43,6 +45,7 @@ public class FakePlayer extends Module {
         this.getSettings().add(beyblade);
         this.getSettings().add(creepy);
         this.getSettings().add(punching);
+        this.getSettings().add(copyInv);
     }
 
     private EntityOtherPlayerMP fakePlayer;
@@ -52,16 +55,18 @@ public class FakePlayer extends Module {
         spawnFakePlayer();
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPacketReceive(PacketEvent.Receive event) {
         if (event.getPacket() instanceof SPacketExplosion) {
             if (fakeTotemPops.getValue()) {
                 if (fakePlayer != null) {
                     final SPacketExplosion explosion = (SPacketExplosion) event.getPacket();
                     if (fakePlayer.getDistance(explosion.getX(), explosion.getY(), explosion.getZ()) <= 15) {
-                        final double damage = CrystalUtil.calculateDamage(explosion.getX(), explosion.getY(), explosion.getZ(), fakePlayer);
+                        double damage = fakeDamageSlider.getValue();
+                        if (realDamage.getValue())
+                            damage = CrystalUtil.calculateDamage(explosion.getX(), explosion.getY(), explosion.getZ(), fakePlayer);
                         if (damage > 0) {
-                            final float health = realDamage.getValue() ? (float) (fakePlayer.getHealth() - damage) : fakePlayer.getHealth() - fakeDamageSlider.getValue();
+                            final float health = (float) (fakePlayer.getHealth() - damage);
                             fakePlayer.setHealth(MathHelper.clamp(health, 0f, 9999));
                         }
                     }
@@ -103,6 +108,7 @@ public class FakePlayer extends Module {
 
     @Override
     protected void onDisable() {
+        removeFakePlayer();
     }
 
     private void fakeTotemPop(Entity entity) {
@@ -115,7 +121,8 @@ public class FakePlayer extends Module {
             fakePlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("2da1acb3-1a8c-471f-a877-43f13cf37e6a"), "0IMAX"));
             fakePlayer.copyLocationAndAnglesFrom(mc.player);
             fakePlayer.rotationYawHead = mc.player.rotationYaw;
-            //fakePlayer.inventory.copyInventory(mc.player.inventory);
+            if (copyInv.getValue())
+                fakePlayer.inventory.copyInventory(mc.player.inventory);
             fakePlayer.setGameType(GameType.SURVIVAL);
             fakePlayer.inventory.offHandInventory.set(0, new ItemStack(Items.TOTEM_OF_UNDYING));
             mc.world.addEntityToWorld(-1776, fakePlayer);

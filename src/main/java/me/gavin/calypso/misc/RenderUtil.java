@@ -1,10 +1,13 @@
 package me.gavin.calypso.misc;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -173,5 +176,23 @@ public class RenderUtil {
         GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
+    }
+
+    private static final Minecraft mc = Minecraft.getMinecraft();
+
+    public static void renderItem(ItemStack itemStack, int posX, int posY) {
+        GlStateManager.pushMatrix();
+        GlStateManager.enableTexture2D();
+        GlStateManager.depthMask(true);
+        GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
+        GlStateManager.enableDepth();
+        GlStateManager.disableAlpha();
+        mc.getRenderItem().zLevel = -150.0f;
+        RenderHelper.enableStandardItemLighting();
+        mc.getRenderItem().renderItemAndEffectIntoGUI(itemStack, posX, posY);
+        mc.getRenderItem().renderItemOverlays(mc.fontRenderer, itemStack, posX, posY);
+        RenderHelper.disableStandardItemLighting();
+        mc.getRenderItem().zLevel = 0.0f;
+        GlStateManager.popMatrix();
     }
 }

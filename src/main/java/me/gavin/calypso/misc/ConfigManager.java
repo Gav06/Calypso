@@ -218,7 +218,9 @@ public class ConfigManager {
             if (setting instanceof NumSetting) {
                 ((NumSetting)setting).setValue(moduleObj.get(setting.getName()).getAsFloat());
             } else if (setting instanceof BoolSetting) {
-                ((BoolSetting)setting).setValue(moduleObj.get(setting.getName()).getAsBoolean());
+                if (moduleObj.get(setting.getName()) != null) {
+                    ((BoolSetting) setting).setValue(moduleObj.get(setting.getName()).getAsBoolean());
+                }
             } else if (setting instanceof EnumSetting) {
                 final EnumSetting enumSetting = (EnumSetting)setting;
                 enumSetting.setValue(EnumIndexer.getEnumValue(moduleObj.get(setting.getName()).getAsInt(), enumSetting.getValue()));

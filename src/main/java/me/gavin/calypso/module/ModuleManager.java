@@ -19,6 +19,7 @@ public class ModuleManager {
         mc = Minecraft.getMinecraft();
         initModules();
         sortedModules.addAll(modules);
+        modules.sort(this::sortAlphabetically);
     }
 
     private void initModules() {
@@ -33,7 +34,7 @@ public class ModuleManager {
         modules.add(new NoRender());
         modules.add(new NoFog());
         modules.add(new Fullbright());
-        modules.add(new Nametags());
+        modules.add(new NameTags());
         modules.add(new BetterScreenshot());
         modules.add(new Criticals());
         modules.add(new Velocity());
@@ -45,7 +46,6 @@ public class ModuleManager {
     }
 
     public void sortModules() {
-        modules.sort(this::sortAlphabetically);
         sortedModules.sort(this::sortLength);
     }
 

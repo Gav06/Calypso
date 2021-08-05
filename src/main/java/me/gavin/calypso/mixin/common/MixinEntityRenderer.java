@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -29,10 +30,10 @@ public class MixinEntityRenderer {
             ci.cancel();
     }
 
-    @Redirect(method = "updateLightmap(F)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;gammaSetting:F"))
-    public float redirectGammaSetting(GameSettings settings) {
+    @ModifyVariable(method = "updateLightmap", at = @At("STORE"), index = 16)
+    public float updateLightmap$ModifyVariable$STORE$16(float original) {
         if (Calypso.INSTANCE.getModuleManager().isModuleEnabled(Fullbright.class))
             return 100f;
-        return settings.gammaSetting;
+        return original;
     }
 }
