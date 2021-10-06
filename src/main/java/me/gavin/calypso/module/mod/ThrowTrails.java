@@ -22,6 +22,11 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+// this code very bad
+// pls to not skid whatever you do
+
+// i wrote this at like 2am
+
 public class ThrowTrails extends Module {
 
     private final HashMap<Integer, Pair<Long, List<Vec3d>>> map = new HashMap<>();
